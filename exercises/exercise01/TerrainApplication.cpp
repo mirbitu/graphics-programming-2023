@@ -4,6 +4,8 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
+#include <ituGL/geometry/VertexAttribute.h>
 
 // Helper structures. Declared here only for this exercise
 struct Vector2
@@ -43,19 +45,35 @@ void TerrainApplication::Initialize()
     BuildShaders();
 
     // (todo) 01.1: Create containers for the vertex position
-
+    std::vector<Vector3> positions;
 
     // (todo) 01.1: Fill in vertex data
-
+    for (int i = 0; i < m_gridX; i++) {
+        for (int j = 0; j < m_gridY; j++) {
+            positions.push_back(Vector3(i, j, 0));
+            positions.push_back(Vector3(i+1, j, 0));
+            positions.push_back(Vector3(i+1, j+1, 0));
+            positions.push_back(Vector3(i, j, 0));
+            positions.push_back(Vector3(i+1, j+1, 0));
+            positions.push_back(Vector3(i, j+1, 0));
+        }
+    }
 
     // (todo) 01.1: Initialize VAO, and VBO
+    vao.Bind();
+    vbo.Bind();
 
+    vbo.AllocateData(std::span(positions));
+
+    VertexAttribute pos(Data::Type::Float, 3);
+    vao.SetAttribute(0, pos, 0);
 
     // (todo) 01.5: Initialize EBO
 
 
     // (todo) 01.1: Unbind VAO, and VBO
-
+    vao.Unbind();
+    vbo.Unbind();
 
     // (todo) 01.5: Unbind EBO
 
@@ -79,6 +97,8 @@ void TerrainApplication::Render()
     glUseProgram(m_shaderProgram);
 
     // (todo) 01.1: Draw the grid
+    vao.Bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_gridX * m_gridY * 6);
 
 }
 
