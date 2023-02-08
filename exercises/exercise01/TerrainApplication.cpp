@@ -46,6 +46,9 @@ void TerrainApplication::Initialize()
 
     // (todo) 01.1: Create containers for the vertex position
     std::vector<Vector3> positions;
+    std::vector<Vector2> textureCoords;
+
+    GLsizei verticesPerQuad = m_gridX * m_gridY * 6;
 
     // (todo) 01.1: Fill in vertex data
     for (float i = 0; i < m_gridX; i++) {
@@ -56,6 +59,13 @@ void TerrainApplication::Initialize()
             positions.push_back(Vector3(i / m_gridX - 0.5, j / m_gridY - 0.5, 0));
             positions.push_back(Vector3((i + 1) / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
             positions.push_back(Vector3(i / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
+
+            textureCoords.push_back(Vector2(0, 0));
+            textureCoords.push_back(Vector2(1, 0));
+            textureCoords.push_back(Vector2(1, 1));
+            textureCoords.push_back(Vector2(0, 0));
+            textureCoords.push_back(Vector2(1, 1));
+            textureCoords.push_back(Vector2(0, 1));
         }
     }
 
@@ -63,10 +73,16 @@ void TerrainApplication::Initialize()
     vao.Bind();
     vbo.Bind();
 
-    vbo.AllocateData(std::span(positions));
+    //vbo.AllocateData(std::span(positions));
+    vbo.AllocateData((verticesPerQuad * GL_FLOAT_VEC3) + (verticesPerQuad * GL_FLOAT_VEC2));
+    vbo.UpdateData(std::span(positions), 0);
+    vbo.UpdateData(std::span(textureCoords), verticesPerQuad * GL_FLOAT_VEC3);
+    
 
     VertexAttribute pos(Data::Type::Float, 3);
+    VertexAttribute tc(Data::Type::Float, 2);
     vao.SetAttribute(0, pos, 0);
+    vao.SetAttribute(1, tc, verticesPerQuad * GL_FLOAT_VEC3);
 
     // (todo) 01.5: Initialize EBO
 
@@ -75,7 +91,7 @@ void TerrainApplication::Initialize()
     vao.Unbind();
     vbo.Unbind();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     // (todo) 01.5: Unbind EBO
 
