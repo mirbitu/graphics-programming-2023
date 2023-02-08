@@ -48,14 +48,14 @@ void TerrainApplication::Initialize()
     std::vector<Vector3> positions;
 
     // (todo) 01.1: Fill in vertex data
-    for (int i = 0; i < m_gridX; i++) {
-        for (int j = 0; j < m_gridY; j++) {
-            positions.push_back(Vector3(i, j, 0));
-            positions.push_back(Vector3(i+1, j, 0));
-            positions.push_back(Vector3(i+1, j+1, 0));
-            positions.push_back(Vector3(i, j, 0));
-            positions.push_back(Vector3(i+1, j+1, 0));
-            positions.push_back(Vector3(i, j+1, 0));
+    for (float i = 0; i < m_gridX; i++) {
+        for (float j = 0; j < m_gridY; j++) {
+            positions.push_back(Vector3(i / m_gridX - 0.5, j / m_gridY - 0.5, 0));
+            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, j / m_gridY - 0.5, 0));
+            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
+            positions.push_back(Vector3(i / m_gridX - 0.5, j / m_gridY - 0.5, 0));
+            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
+            positions.push_back(Vector3(i / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
         }
     }
 
@@ -75,6 +75,8 @@ void TerrainApplication::Initialize()
     vao.Unbind();
     vbo.Unbind();
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
     // (todo) 01.5: Unbind EBO
 
 }
