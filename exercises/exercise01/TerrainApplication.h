@@ -3,6 +3,7 @@
 #include <ituGL/application/Application.h>
 #include <ituGL/geometry/VertexBufferObject.h>
 #include <ituGL/geometry/VertexArrayObject.h>
+#include <ituGL/geometry/ElementBufferObject.h>
 
 // (todo) 01.1: Include the libraries you need
 
@@ -31,5 +32,5 @@ private:
     VertexArrayObject vao;
 
     // (todo) 01.5: Declare an EBO
-
+    ElementBufferObject ebo;
 };

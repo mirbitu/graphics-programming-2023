@@ -7,6 +7,8 @@
 #include <vector>
 #include <ituGL/geometry/VertexAttribute.h>
 
+#define INDEX(i, j) ((i)*(m_gridY+1) + j)
+
 // Helper structures. Declared here only for this exercise
 struct Vector2
 {
@@ -47,25 +49,30 @@ void TerrainApplication::Initialize()
     // (todo) 01.1: Create containers for the vertex position
     std::vector<Vector3> positions;
     std::vector<Vector2> textureCoords;
+    std::vector<unsigned int> indices;
 
-    GLsizei verticesPerQuad = m_gridX * m_gridY * 6;
+    GLsizei totalVertices = (m_gridX + 1) * (m_gridY + 1);
 
     // (todo) 01.1: Fill in vertex data
-    for (float i = 0; i < m_gridX; i++) {
-        for (float j = 0; j < m_gridY; j++) {
-            positions.push_back(Vector3(i / m_gridX - 0.5, j / m_gridY - 0.5, 0));
-            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, j / m_gridY - 0.5, 0));
-            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
-            positions.push_back(Vector3(i / m_gridX - 0.5, j / m_gridY - 0.5, 0));
-            positions.push_back(Vector3((i + 1) / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
-            positions.push_back(Vector3(i / m_gridX - 0.5, (j + 1) / m_gridY - 0.5, 0));
+    for (unsigned int i = 0; i < m_gridX; i++) {
+        for (unsigned int j = 0; j < m_gridY; j++) {
+            indices.push_back(INDEX(i, j));
+            indices.push_back(INDEX(i+1, j));
+            indices.push_back(INDEX(i+1, j+1));
+            indices.push_back(INDEX(i, j));
+            indices.push_back(INDEX(i, j+1));
+            indices.push_back(INDEX(i+1, j+1));
+        }
+    }
 
-            textureCoords.push_back(Vector2(0, 0));
-            textureCoords.push_back(Vector2(1, 0));
-            textureCoords.push_back(Vector2(1, 1));
-            textureCoords.push_back(Vector2(0, 0));
-            textureCoords.push_back(Vector2(1, 1));
-            textureCoords.push_back(Vector2(0, 1));
+    for (float i = 0; i < m_gridX + 1; i++) {
+        for (float j = 0; j < m_gridY + 1; j++) {
+            positions.push_back(Vector3(i / m_gridX - 0.5,
+                j / m_gridY - 0.5,
+                0));
+
+            textureCoords.push_back(Vector2(i, j));
+
         }
     }
 
@@ -74,27 +81,28 @@ void TerrainApplication::Initialize()
     vbo.Bind();
 
     //vbo.AllocateData(std::span(positions));
-    vbo.AllocateData((verticesPerQuad * GL_FLOAT_VEC3) + (verticesPerQuad * GL_FLOAT_VEC2));
+    vbo.AllocateData((totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
     vbo.UpdateData(std::span(positions), 0);
-    vbo.UpdateData(std::span(textureCoords), verticesPerQuad * GL_FLOAT_VEC3);
+    vbo.UpdateData(std::span(textureCoords), totalVertices * GL_FLOAT_VEC3);
     
-
     VertexAttribute pos(Data::Type::Float, 3);
     VertexAttribute tc(Data::Type::Float, 2);
     vao.SetAttribute(0, pos, 0);
-    vao.SetAttribute(1, tc, verticesPerQuad * GL_FLOAT_VEC3);
+    vao.SetAttribute(1, tc, totalVertices * GL_FLOAT_VEC3);
 
     // (todo) 01.5: Initialize EBO
+    ebo.Bind();
 
+    ebo.AllocateData<unsigned int>(std::span(indices));
 
     // (todo) 01.1: Unbind VAO, and VBO
     vao.Unbind();
     vbo.Unbind();
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     // (todo) 01.5: Unbind EBO
+    ebo.Unbind();
 
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void TerrainApplication::Update()
@@ -116,7 +124,8 @@ void TerrainApplication::Render()
 
     // (todo) 01.1: Draw the grid
     vao.Bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_gridX * m_gridY * 6);
+    //glDrawArrays(GL_TRIANGLES, 0, m_gridX * m_gridY * 6);
+    glDrawElements(GL_TRIANGLES, m_gridX * m_gridY * 6, GL_UNSIGNED_INT, 0);
 
 }
 
