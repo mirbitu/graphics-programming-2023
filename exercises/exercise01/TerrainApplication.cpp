@@ -51,6 +51,7 @@ void TerrainApplication::Initialize()
     // (todo) 01.1: Create containers for the vertex position
     std::vector<Vector3> positions;
     std::vector<Vector2> textureCoords;
+    std::vector<Vector3> colors;
     std::vector<unsigned int> indices;
 
     GLsizei totalVertices = (m_gridX + 1) * (m_gridY + 1);
@@ -84,6 +85,25 @@ void TerrainApplication::Initialize()
 
             textureCoords.push_back(Vector2(i, j));
 
+            if (zComponent > 0.45) {
+                colors.push_back(Vector3(1, 1, 1));
+            }
+            else if (zComponent > 0.35) {
+                colors.push_back(Vector3(155.0/255.0, 155.0/255.0, 155.0/255.0));
+            }
+            else if (zComponent > 0) {
+                colors.push_back(Vector3(66.0/255.0, 143.0/255.0, 92.0/255.0));
+            }
+            else if (zComponent > -0.2) {
+                colors.push_back(Vector3(173.0/255.0, 139.0/255.0, 117.0/255.0));
+            }
+            else if (zComponent > -0.5) {
+                colors.push_back(Vector3(29.0 / 255.0, 122.0 / 255.0, 190.0 / 255.0));
+            }
+            else {
+                colors.push_back(Vector3(25.0 / 255.0, 41.0 / 255.0, 100.0 / 255.0));
+            }
+        
         }
     }
     
@@ -92,14 +112,17 @@ void TerrainApplication::Initialize()
     vbo.Bind();
 
     //vbo.AllocateData(std::span(positions));
-    vbo.AllocateData((totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
+    vbo.AllocateData((totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2) + (totalVertices * GL_FLOAT_VEC3));
     vbo.UpdateData(std::span(positions), 0);
     vbo.UpdateData(std::span(textureCoords), totalVertices * GL_FLOAT_VEC3);
+    vbo.UpdateData(std::span(colors), (totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
     
     VertexAttribute pos(Data::Type::Float, 3);
     VertexAttribute tc(Data::Type::Float, 2);
+    VertexAttribute col(Data::Type::Float, 3);
     vao.SetAttribute(0, pos, 0);
     vao.SetAttribute(1, tc, totalVertices * GL_FLOAT_VEC3);
+    vao.SetAttribute(2, col, (totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
 
     // (todo) 01.5: Initialize EBO
     ebo.Bind();
@@ -113,7 +136,8 @@ void TerrainApplication::Initialize()
     // (todo) 01.5: Unbind EBO
     ebo.Unbind();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void TerrainApplication::Update()
