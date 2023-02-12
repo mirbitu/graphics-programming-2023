@@ -1,6 +1,6 @@
 #include "TerrainApplication.h"
 
-// (todo) 01.1: Include the libraries you need
+// 01.1: Include the libraries you need
 
 #include <cmath>
 #include <iostream>
@@ -32,8 +32,14 @@ struct Vector3
     }
 };
 
-// (todo) 01.8: Declare an struct with the vertex format
-
+// 01.8: Declare an struct with the vertex format
+struct Vertex
+{
+    Vertex(Vector3 atr1, Vector2 atr2, Vector3 atr3) : atr1(atr1), atr2(atr2), atr3(atr3) {}
+    Vector3 atr1;
+    Vector2 atr2;
+    Vector3 atr3;
+};
 
 
 TerrainApplication::TerrainApplication()
@@ -48,15 +54,16 @@ void TerrainApplication::Initialize()
     // Build shaders and store in m_shaderProgram
     BuildShaders();
 
-    // (todo) 01.1: Create containers for the vertex position
+    // 01.1: Create containers for the vertex position
     std::vector<Vector3> positions;
     std::vector<Vector2> textureCoords;
     std::vector<Vector3> colors;
+    std::vector<Vertex> vertexAttributes;
     std::vector<unsigned int> indices;
 
     GLsizei totalVertices = (m_gridX + 1) * (m_gridY + 1);
 
-    // (todo) 01.1: Fill in vertex data
+    // 01.1: Fill in vertex data
     for (unsigned int i = 0; i < m_gridX; i++) {
         for (unsigned int j = 0; j < m_gridY; j++) {
             indices.push_back(INDEX(i, j));
@@ -70,7 +77,7 @@ void TerrainApplication::Initialize()
 
     for (float i = 0; i < m_gridX + 1; i++) {
         for (float j = 0; j < m_gridY + 1; j++) {
-            float xfrequency = 3.0;
+            float xfrequency = 4.0;
             float yfrequency = 0.7;
             float amplitude = 0.6;
 
@@ -79,61 +86,60 @@ void TerrainApplication::Initialize()
                 0,
                 3.0, 0.5, 6);
 
-            positions.push_back(Vector3(i / m_gridX - 0.5,
+            Vector3 positionAtr = Vector3(i / m_gridX - 0.5,
                 j / m_gridY - 0.5,
-                zComponent*amplitude));
+                zComponent*amplitude);
 
-            textureCoords.push_back(Vector2(i, j));
+            Vector2 textureCoordsAtr = Vector2(i, j);
 
+            Vector3 colorsAtr;
             if (zComponent > 0.45) {
-                colors.push_back(Vector3(1, 1, 1));
+                colorsAtr = Vector3(1, 1, 1);
             }
             else if (zComponent > 0.35) {
-                colors.push_back(Vector3(155.0/255.0, 155.0/255.0, 155.0/255.0));
+                colorsAtr = Vector3(155.0/255.0, 155.0/255.0, 155.0/255.0);
             }
             else if (zComponent > 0) {
-                colors.push_back(Vector3(66.0/255.0, 143.0/255.0, 92.0/255.0));
+                colorsAtr = Vector3(66.0/255.0, 143.0/255.0, 92.0/255.0);
             }
             else if (zComponent > -0.2) {
-                colors.push_back(Vector3(173.0/255.0, 139.0/255.0, 117.0/255.0));
+                colorsAtr = Vector3(173.0/255.0, 139.0/255.0, 117.0/255.0);
             }
             else if (zComponent > -0.5) {
-                colors.push_back(Vector3(29.0 / 255.0, 122.0 / 255.0, 190.0 / 255.0));
+                colorsAtr = Vector3(29.0 / 255.0, 122.0 / 255.0, 190.0 / 255.0);
             }
             else {
-                colors.push_back(Vector3(25.0 / 255.0, 41.0 / 255.0, 100.0 / 255.0));
+                colorsAtr = Vector3(25.0 / 255.0, 41.0 / 255.0, 100.0 / 255.0);
             }
+
+            vertexAttributes.push_back(Vertex(positionAtr, textureCoordsAtr, colorsAtr));
         
         }
     }
     
-    // (todo) 01.1: Initialize VAO, and VBO
+    // 01.1: Initialize VAO, and VBO
     vao.Bind();
     vbo.Bind();
 
-    //vbo.AllocateData(std::span(positions));
-    vbo.AllocateData((totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2) + (totalVertices * GL_FLOAT_VEC3));
-    vbo.UpdateData(std::span(positions), 0);
-    vbo.UpdateData(std::span(textureCoords), totalVertices * GL_FLOAT_VEC3);
-    vbo.UpdateData(std::span(colors), (totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
-    
+    vbo.AllocateData(std::span(vertexAttributes));
+ 
     VertexAttribute pos(Data::Type::Float, 3);
     VertexAttribute tc(Data::Type::Float, 2);
     VertexAttribute col(Data::Type::Float, 3);
-    vao.SetAttribute(0, pos, 0);
-    vao.SetAttribute(1, tc, totalVertices * GL_FLOAT_VEC3);
-    vao.SetAttribute(2, col, (totalVertices * GL_FLOAT_VEC3) + (totalVertices * GL_FLOAT_VEC2));
+    vao.SetAttribute(0, pos, 0, sizeof(Vertex));
+    vao.SetAttribute(1, tc, 3 * sizeof(float), sizeof(Vertex));
+    vao.SetAttribute(2, col, (3 * sizeof(float)) + (2 * sizeof(float)), sizeof(Vertex));
 
-    // (todo) 01.5: Initialize EBO
+    // 01.5: Initialize EBO
     ebo.Bind();
 
     ebo.AllocateData<unsigned int>(std::span(indices));
 
-    // (todo) 01.1: Unbind VAO, and VBO
+    // 01.1: Unbind VAO, and VBO
     vao.Unbind();
     vbo.Unbind();
     
-    // (todo) 01.5: Unbind EBO
+    // 01.5: Unbind EBO
     ebo.Unbind();
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -157,9 +163,8 @@ void TerrainApplication::Render()
     // Set shader to be used
     glUseProgram(m_shaderProgram);
 
-    // (todo) 01.1: Draw the grid
+    // 01.1: Draw the grid
     vao.Bind();
-    //glDrawArrays(GL_TRIANGLES, 0, m_gridX * m_gridY * 6);
     glDrawElements(GL_TRIANGLES, m_gridX * m_gridY * 6, GL_UNSIGNED_INT, 0);
 
 }
