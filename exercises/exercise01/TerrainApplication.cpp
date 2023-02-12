@@ -8,6 +8,8 @@
 #include <ituGL/geometry/VertexAttribute.h>
 
 #define INDEX(i, j) ((i)*(m_gridY+1) + j)
+#define STB_PERLIN_IMPLEMENTATION
+#include <stb_perlin.h>
 
 // Helper structures. Declared here only for this exercise
 struct Vector2
@@ -35,7 +37,7 @@ struct Vector3
 
 
 TerrainApplication::TerrainApplication()
-    : Application(1024, 1024, "Terrain demo"), m_gridX(16), m_gridY(16), m_shaderProgram(0)
+    : Application(1024, 1024, "Terrain demo"), m_gridX(32), m_gridY(32), m_shaderProgram(0)
 {
 }
 
@@ -67,15 +69,24 @@ void TerrainApplication::Initialize()
 
     for (float i = 0; i < m_gridX + 1; i++) {
         for (float j = 0; j < m_gridY + 1; j++) {
+            float xfrequency = 3.0;
+            float yfrequency = 0.7;
+            float amplitude = 0.6;
+
+            float zComponent = stb_perlin_fbm_noise3(i / (m_gridX*xfrequency) - 0.5,
+                j / (m_gridY*yfrequency) - 0.5,
+                0,
+                3.0, 0.5, 6);
+
             positions.push_back(Vector3(i / m_gridX - 0.5,
                 j / m_gridY - 0.5,
-                0));
+                zComponent*amplitude));
 
             textureCoords.push_back(Vector2(i, j));
 
         }
     }
-
+    
     // (todo) 01.1: Initialize VAO, and VBO
     vao.Bind();
     vbo.Bind();
@@ -102,7 +113,7 @@ void TerrainApplication::Initialize()
     // (todo) 01.5: Unbind EBO
     ebo.Unbind();
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void TerrainApplication::Update()
