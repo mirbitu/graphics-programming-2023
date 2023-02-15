@@ -14,15 +14,19 @@ struct Particle
     glm::vec2 position;
     // (todo) 02.X: Add more vertex attributes
     float size;
+    float duration;
+    float birth;
  
 };
 
 // List of attributes of the particle. Must match the structure above
-const std::array<VertexAttribute, 2> s_vertexAttributes =
+const std::array<VertexAttribute, 4> s_vertexAttributes =
 {
     VertexAttribute(Data::Type::Float, 2), // position
     // (todo) 02.X: Add more vertex attributes
-    VertexAttribute(Data::Type::Float, 1) // size
+    VertexAttribute(Data::Type::Float, 1), // size
+    VertexAttribute(Data::Type::Float, 1), // duration
+    VertexAttribute(Data::Type::Float, 1) // birth
 };
 
 
@@ -69,8 +73,9 @@ void ParticlesApplication::Update()
         // (todo) 02.X: Compute new particle attributes here
         float randomSize = RandomRange(1.0, 20.0);
         float size = randomSize;
+        float duration = 2.0;
 
-        EmitParticle(mousePosition, size);
+        EmitParticle(mousePosition, size, duration);
     }
 
     // save the mouse position (to compare next frame and obtain velocity)
@@ -86,7 +91,9 @@ void ParticlesApplication::Render()
     m_shaderProgram.Use();
 
     // (todo) 02.4: Set CurrentTime uniform
-
+    ShaderProgram::Location timeLocation = m_shaderProgram.GetUniformLocation("CurrentTime"); // can't store in member variable somehow???
+    GLfloat time = GetCurrentTime();
+    m_shaderProgram.SetUniform(timeLocation, time);
 
     // (todo) 02.6: Set Gravity uniform
 
@@ -117,6 +124,7 @@ void ParticlesApplication::InitializeGeometry()
     GLsizei stride = sizeof(Particle);
     GLint offset = 0;
     GLuint location = 0;
+    
     for (const VertexAttribute& attribute : s_vertexAttributes)
     {
         m_vao.SetAttribute(location++, attribute, offset, stride);
@@ -146,13 +154,15 @@ void ParticlesApplication::InitializeShaders()
     }
 }
 
-void ParticlesApplication::EmitParticle(const glm::vec2& position, const float& size)
+void ParticlesApplication::EmitParticle(const glm::vec2& position, const float& size, const float& duration)
 {
     // Initialize the particle
     Particle particle;
     particle.position = position;
     // (todo) 02.X: Set the value for other attributes of the particle
     particle.size = size;
+    particle.duration = duration;
+    particle.birth = GetCurrentTime();
 
     // Get the index in the circular buffer
     unsigned int particleIndex = m_particleCount % m_particleCapacity;
