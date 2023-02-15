@@ -25,7 +25,7 @@ private:
     unsigned int m_gridX, m_gridY;
     unsigned int m_shaderProgram;
 
-    VertexBufferObject m_vbo;
-    VertexArrayObject m_vao;
-    ElementBufferObject m_ebo;
+    VertexBufferObject vbo;
+    VertexArrayObject vao;
+    ElementBufferObject ebo;
 };
