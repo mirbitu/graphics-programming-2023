@@ -1,7 +1,7 @@
 #version 330 core
 
 // (todo) 03.X: Add the in variables here
-
+in vec4 Normals;
 
 out vec4 FragColor;
 
