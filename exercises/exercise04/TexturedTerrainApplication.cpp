@@ -66,7 +66,7 @@ void TexturedTerrainApplication::Render()
     GetDevice().Clear(true, Color(0.0f, 0.0f, 0.0f, 1.0f), true, 1.0f);
 
     // Terrain patches
-    DrawObject(m_terrainPatch, *m_defaultMaterial, glm::scale(glm::vec3(10.0f)));
+    DrawObject(m_terrainPatch, *materials[1], glm::scale(glm::vec3(10.0f)));
 
     // (todo) 04.2: Add more patches here
     
@@ -79,6 +79,7 @@ void TexturedTerrainApplication::Render()
 void TexturedTerrainApplication::InitializeTextures()
 {
     m_defaultTexture = CreateDefaultTexture();
+    m_heightMap = CreateHeightMap(m_gridX, m_gridY, glm::ivec2());
 
     // (todo) 04.3: Load terrain textures here
 
@@ -97,10 +98,20 @@ void TexturedTerrainApplication::InitializeMaterials()
 
     // Default material
     m_defaultMaterial = std::make_shared<Material>(defaultShaderProgram);
+    materials.push_back(m_defaultMaterial);
     m_defaultMaterial->SetUniformValue("Color", glm::vec4(1.0f));
 
     // (todo) 04.1: Add terrain shader and material here
+    Shader terrainVS = m_vertexShaderLoader.Load("shaders/terrain.vert");
+    Shader terrainFS = m_fragmentShaderLoader.Load("shaders/terrain.frag");
+    std::shared_ptr<ShaderProgram> terrainShaderProgram = std::make_shared<ShaderProgram>();
+    terrainShaderProgram->Build(terrainVS, terrainFS);
 
+    // Terrain material
+    std::shared_ptr<Material> m_terrainMaterial = std::make_shared<Material>(terrainShaderProgram);
+    materials.push_back(m_terrainMaterial);
+    m_terrainMaterial->SetUniformValue("Color", glm::vec4(1.0f));
+    m_terrainMaterial->SetUniformValue("Heightmap", m_heightMap);
 
 
     // (todo) 04.5: Add water shader and material here
@@ -172,6 +183,11 @@ std::shared_ptr<Texture2DObject> TexturedTerrainApplication::CreateHeightMap(uns
         for (unsigned int i = 0; i < width; ++i)
         {
             // (todo) 04.1: Add pixel data
+            float x = i / (width - 1.0f);
+            float y = j / (height - 1.0f);
+            float z = 0;
+            float noise = stb_perlin_fbm_noise3(x, y, 0.0f, 1.9f, 0.5f, 8) * 0.5f;
+            pixels.push_back(noise);
         }
     }
 
