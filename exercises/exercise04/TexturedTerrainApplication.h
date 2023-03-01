@@ -56,4 +56,6 @@ private:
     std::shared_ptr<Texture2DObject> m_heightMap3;
     std::shared_ptr<Texture2DObject> m_heightMap4;
 
+    std::shared_ptr<Texture2DObject> grassTexture;
+
 };

@@ -40,7 +40,7 @@ void TexturedTerrainApplication::Initialize()
     GetDevice().EnableFeature(GL_DEPTH_TEST);
 
     //Enable wireframe
-    GetDevice().SetWireframeEnabled(true);
+    //GetDevice().SetWireframeEnabled(true);
 }
 
 void TexturedTerrainApplication::Update()
@@ -94,7 +94,7 @@ void TexturedTerrainApplication::InitializeTextures()
     m_heightMap4 = CreateHeightMap(m_gridX, m_gridY, glm::ivec2(-1, -1));
 
     // (todo) 04.3: Load terrain textures here
-
+    grassTexture = LoadTexture("textures/grass.jpg");
 
     // (todo) 04.5: Load water texture here
 
@@ -124,6 +124,8 @@ void TexturedTerrainApplication::InitializeMaterials()
     materials.push_back(m_terrainMaterial);
     m_terrainMaterial->SetUniformValue("Color", glm::vec4(1.0f));
     m_terrainMaterial->SetUniformValue("Heightmap", m_heightMap);
+    m_terrainMaterial->SetUniformValue("ColorTexture", grassTexture);
+    m_terrainMaterial->SetUniformValue("ColorTextureScale", glm::vec2(0.01));
     // 04.2
     materials.push_back(std::make_shared<Material>(*m_terrainMaterial));
     materials.push_back(std::make_shared<Material>(*m_terrainMaterial));
@@ -131,6 +133,7 @@ void TexturedTerrainApplication::InitializeMaterials()
     materials[2]->SetUniformValue("Heightmap", m_heightMap2);
     materials[3]->SetUniformValue("Heightmap", m_heightMap3);
     materials[4]->SetUniformValue("Heightmap", m_heightMap4);
+    
 
 
     // (todo) 04.5: Add water shader and material here
@@ -178,16 +181,16 @@ std::shared_ptr<Texture2DObject> TexturedTerrainApplication::LoadTexture(const c
     
     
     // (todo) 04.3: Load the texture data here
-    unsigned char* data = nullptr;
+    unsigned char* data = stbi_load(path, &width, &height, &components, 4);
 
     texture->Bind();
     texture->SetImage(0, width, height, TextureObject::FormatRGBA, TextureObject::InternalFormatRGBA, std::span<const unsigned char>(data, width * height * 4));
 
     // (todo) 04.3: Generate mipmaps
-
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // (todo) 04.3: Release texture data
-
+    stbi_image_free(data);
 
     return texture;
 }
