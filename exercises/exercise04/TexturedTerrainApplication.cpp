@@ -79,7 +79,7 @@ void TexturedTerrainApplication::Render()
     DrawObject(m_terrainPatch, *materials[3], glm::translate(glm::vec3(-10.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(10.0f)));
     DrawObject(m_terrainPatch, *materials[4], glm::translate(glm::vec3(-10.0f, 0.0f, -10.0f)) * glm::scale(glm::vec3(10.0f)));
     
-
+    materials[5]->SetUniformValue("Time", GetCurrentTime());
     // Water patches
     // (todo) 04.5: Add water planes
     DrawObject(m_terrainPatch, *materials[5], glm::translate(glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(10.0f)));
@@ -105,6 +105,8 @@ void TexturedTerrainApplication::InitializeTextures()
 
     // (todo) 04.5: Load water texture here
     waterTexture = LoadTexture("textures/water.png");
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 }
 
 void TexturedTerrainApplication::InitializeMaterials()

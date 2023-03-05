@@ -10,8 +10,10 @@ uniform vec4 Color;
 uniform sampler2D WaterTexture;
 uniform vec2 ColorTextureScale;
 
+uniform float Time;
+
 
 void main()
 {
-	FragColor = Color * texture(WaterTexture, TexCoord * ColorTextureScale);
+	FragColor = Color * texture(WaterTexture, (TexCoord-(Time*3)) * ColorTextureScale);
 }
