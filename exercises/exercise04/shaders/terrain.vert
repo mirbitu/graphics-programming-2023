@@ -7,6 +7,7 @@ layout (location = 2) in vec2 VertexTexCoord;
 out vec3 WorldPosition;
 out vec3 WorldNormal;
 out vec2 TexCoord;
+out float Height;
 
 uniform mat4 WorldMatrix;
 uniform mat4 ViewProjMatrix;
@@ -14,11 +15,12 @@ uniform sampler2D Heightmap;
 
 void main()
 {
-	// Height
+	// height
 	vec4 texturesample = texture(Heightmap, (VertexPosition.xz * 127 + 0.5f) / 128);
 
 	WorldPosition = (WorldMatrix * vec4(VertexPosition.x, texturesample.x, VertexPosition.z, 1.0)).xyz;
 	WorldNormal = (WorldMatrix * vec4(VertexNormal, 0.0)).xyz;
 	TexCoord = VertexTexCoord;
 	gl_Position = ViewProjMatrix * vec4(WorldPosition, 1.0);
+	Height = texturesample.x;
 }

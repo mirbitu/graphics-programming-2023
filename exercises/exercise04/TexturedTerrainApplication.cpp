@@ -95,6 +95,9 @@ void TexturedTerrainApplication::InitializeTextures()
 
     // (todo) 04.3: Load terrain textures here
     grassTexture = LoadTexture("textures/grass.jpg");
+    dirtTexture = LoadTexture("textures/dirt.png");
+    rockTexture = LoadTexture("textures/rock.jpg");
+    snowTexture = LoadTexture("textures/snow.jpg");
 
     // (todo) 04.5: Load water texture here
 
@@ -124,8 +127,17 @@ void TexturedTerrainApplication::InitializeMaterials()
     materials.push_back(m_terrainMaterial);
     m_terrainMaterial->SetUniformValue("Color", glm::vec4(1.0f));
     m_terrainMaterial->SetUniformValue("Heightmap", m_heightMap);
-    m_terrainMaterial->SetUniformValue("ColorTexture", grassTexture);
+    m_terrainMaterial->SetUniformValue("GrassTexture", grassTexture);
+    m_terrainMaterial->SetUniformValue("DirtTexture", dirtTexture);
+    m_terrainMaterial->SetUniformValue("RockTexture", rockTexture);
+    m_terrainMaterial->SetUniformValue("SnowTexture", snowTexture);
     m_terrainMaterial->SetUniformValue("ColorTextureScale", glm::vec2(0.01));
+
+    // 04.4
+    m_terrainMaterial->SetUniformValue("DirtGrassRange", glm::vec2(-0.18f, 0.0f));
+    m_terrainMaterial->SetUniformValue("GrassRockRange", glm::vec2(0.0f, 0.18f));
+    m_terrainMaterial->SetUniformValue("RockSnowRange", glm::vec2(0.22f, 0.28f));
+
     // 04.2
     materials.push_back(std::make_shared<Material>(*m_terrainMaterial));
     materials.push_back(std::make_shared<Material>(*m_terrainMaterial));
