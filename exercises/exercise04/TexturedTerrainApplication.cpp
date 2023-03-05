@@ -82,6 +82,10 @@ void TexturedTerrainApplication::Render()
 
     // Water patches
     // (todo) 04.5: Add water planes
+    DrawObject(m_terrainPatch, *materials[5], glm::translate(glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(10.0f)));
+    DrawObject(m_terrainPatch, *materials[5], glm::translate(glm::vec3(0.0f, -1.0f, -10.0f)) * glm::scale(glm::vec3(10.0f)));
+    DrawObject(m_terrainPatch, *materials[5], glm::translate(glm::vec3(-10.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(10.0f)));
+    DrawObject(m_terrainPatch, *materials[5], glm::translate(glm::vec3(-10.0f, -1.0f, -10.0f)) * glm::scale(glm::vec3(10.0f)));
 
 }
 
@@ -100,7 +104,7 @@ void TexturedTerrainApplication::InitializeTextures()
     snowTexture = LoadTexture("textures/snow.jpg");
 
     // (todo) 04.5: Load water texture here
-
+    waterTexture = LoadTexture("textures/water.png");
 }
 
 void TexturedTerrainApplication::InitializeMaterials()
@@ -134,8 +138,8 @@ void TexturedTerrainApplication::InitializeMaterials()
     m_terrainMaterial->SetUniformValue("ColorTextureScale", glm::vec2(0.01));
 
     // 04.4
-    m_terrainMaterial->SetUniformValue("DirtGrassRange", glm::vec2(-0.18f, 0.0f));
-    m_terrainMaterial->SetUniformValue("GrassRockRange", glm::vec2(0.0f, 0.18f));
+    m_terrainMaterial->SetUniformValue("DirtGrassRange", glm::vec2(-0.18f, 0.005f));
+    m_terrainMaterial->SetUniformValue("GrassRockRange", glm::vec2(0.005f, 0.18f));
     m_terrainMaterial->SetUniformValue("RockSnowRange", glm::vec2(0.22f, 0.28f));
 
     // 04.2
@@ -149,6 +153,19 @@ void TexturedTerrainApplication::InitializeMaterials()
 
 
     // (todo) 04.5: Add water shader and material here
+    Shader waterVS = m_vertexShaderLoader.Load("shaders/water.vert");
+    Shader waterFS = m_fragmentShaderLoader.Load("shaders/water.frag");
+    std::shared_ptr<ShaderProgram> waterShaderProgram = std::make_shared<ShaderProgram>();
+    waterShaderProgram->Build(waterVS, waterFS);
+
+    std::shared_ptr<Material> m_waterMaterial = std::make_shared<Material>(waterShaderProgram);
+    materials.push_back(m_waterMaterial);
+    m_waterMaterial->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+    m_waterMaterial->SetUniformValue("WaterTexture", waterTexture);
+    m_waterMaterial->SetUniformValue("ColorTextureScale", glm::vec2(0.01));
+    m_waterMaterial->SetBlendEquation(Material::BlendEquation::Add);
+    m_waterMaterial->SetBlendParams(Material::BlendParam::SourceAlpha, Material::BlendParam::OneMinusSourceAlpha);
+
 
 
 }

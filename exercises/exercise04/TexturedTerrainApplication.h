@@ -60,5 +60,6 @@ private:
     std::shared_ptr<Texture2DObject> dirtTexture;
     std::shared_ptr<Texture2DObject> rockTexture;
     std::shared_ptr<Texture2DObject> snowTexture;
+    std::shared_ptr<Texture2DObject> waterTexture;
 
 };
