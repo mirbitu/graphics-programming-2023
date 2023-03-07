@@ -81,7 +81,7 @@ public:
 protected:
     // Bind the specific target. Used by the Bind() method in derived classes
     void Bind(Target target) const;
-    // Unbind the specific target. It is static because we don´t need any objects to do it
+    // Unbind the specific target. It is static because we donï¿½t need any objects to do it
     static void Unbind(Target target);
 
 #ifndef NDEBUG

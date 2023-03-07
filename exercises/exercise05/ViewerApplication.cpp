@@ -93,14 +93,52 @@ void ViewerApplication::InitializeModel()
 
     // Configure loader
     ModelLoader loader(material);
+    
+    loader.SetCreateMaterials(true);
+
     loader.SetMaterialAttribute(VertexAttribute::Semantic::Position, "VertexPosition");
     loader.SetMaterialAttribute(VertexAttribute::Semantic::Normal, "VertexNormal");
     loader.SetMaterialAttribute(VertexAttribute::Semantic::TexCoord0, "VertexTexCoord");
 
     // Load model
     m_model = loader.Load("models/mill/Mill.obj");
-
+    
     // (todo) 05.1: Load and set textures
+    
+    Texture2DLoader textureLoader(TextureObject::Format::FormatRGBA, TextureObject::InternalFormat::InternalFormatRGBA8);
+    textureLoader.SetFlipVertical(true);
+    
+    
+    Material& mat1 = m_model.GetMaterial(0);
+    mat1.SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    mat1.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_shadow.jpg")));
+    m_model.SetMaterial(0, std::make_shared<Material>(mat1));
+
+    Material& mat2 = m_model.GetMaterial(1);
+    mat2.SetUniformValue("Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+    mat2.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_color.jpg")));
+    m_model.SetMaterial(1, std::make_shared<Material>(mat2));
+
+    Material& mat3 = m_model.GetMaterial(2);
+    mat3.SetUniformValue("Color", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    mat3.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/MillCat_color.jpg")));
+    m_model.SetMaterial(2, std::make_shared<Material>(mat3));
+
+    //Material& material1 = m_model.GetMaterial(1);
+    //material1->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    //material1->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_color.jpg")));
+    //m_model.SetMaterial(0, material1);
+    /*
+    Material material2 = m_model.GetMaterial(1);
+    material2->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    material2->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/MillCat_color.jpg")));
+    m_model.SetMaterial(1, material2);
+
+    Material material3 = m_model.GetMaterial(2);
+    material3->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    material3->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_shadow.jpg")));
+    m_model.SetMaterial(2, material3);
+    */
 
 }
 
