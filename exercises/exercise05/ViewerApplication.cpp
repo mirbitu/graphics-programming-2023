@@ -64,8 +64,8 @@ void ViewerApplication::Cleanup()
 void ViewerApplication::InitializeModel()
 {
     // Load and build shader
-    Shader vertexShader = ShaderLoader::Load(Shader::VertexShader, "shaders/unlit.vert");
-    Shader fragmentShader = ShaderLoader::Load(Shader::FragmentShader, "shaders/unlit.frag");
+    Shader vertexShader = ShaderLoader::Load(Shader::VertexShader, "shaders/blinn-phong.vert");
+    Shader fragmentShader = ShaderLoader::Load(Shader::FragmentShader, "shaders/blinn-phong.frag");
     std::shared_ptr<ShaderProgram> shaderProgram = std::make_shared<ShaderProgram>();
     shaderProgram->Build(vertexShader, fragmentShader);
 
@@ -73,21 +73,25 @@ void ViewerApplication::InitializeModel()
     ShaderUniformCollection::NameSet filteredUniforms;
     filteredUniforms.insert("WorldMatrix");
     filteredUniforms.insert("ViewProjMatrix");
+    filteredUniforms.insert("AmbientColor");
 
     // Create reference material
     std::shared_ptr<Material> material = std::make_shared<Material>(shaderProgram, filteredUniforms);
     material->SetUniformValue("Color", glm::vec4(1.0f));
+    material->SetUniformValue("AmbientReflection", 1.0f);
+    
 
     // Setup function
     ShaderProgram::Location worldMatrixLocation = shaderProgram->GetUniformLocation("WorldMatrix");
     ShaderProgram::Location viewProjMatrixLocation = shaderProgram->GetUniformLocation("ViewProjMatrix");
+    ShaderProgram::Location ambientColorLocation = shaderProgram->GetUniformLocation("AmbientColor");
     material->SetShaderSetupFunction([=](ShaderProgram& shaderProgram)
         {
             shaderProgram.SetUniform(worldMatrixLocation, glm::scale(glm::vec3(0.1f)));
             shaderProgram.SetUniform(viewProjMatrixLocation, m_camera.GetViewProjectionMatrix());
-
+            
             // (todo) 05.X: Set camera and light uniforms
-
+            shaderProgram.SetUniform(ambientColorLocation, ambientColor);
 
         });
 
@@ -110,35 +114,22 @@ void ViewerApplication::InitializeModel()
     
     
     Material& mat1 = m_model.GetMaterial(0);
-    mat1.SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    mat1.SetUniformValue("Color", glm::vec4(1.0f));
     mat1.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_shadow.jpg")));
+    mat1.SetUniformValue("AmbientReflection", 0.5f);
     m_model.SetMaterial(0, std::make_shared<Material>(mat1));
 
     Material& mat2 = m_model.GetMaterial(1);
-    mat2.SetUniformValue("Color", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+    mat2.SetUniformValue("Color", glm::vec4(1.0f));
     mat2.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_color.jpg")));
+    mat2.SetUniformValue("AmbientReflection", 0.8f);
     m_model.SetMaterial(1, std::make_shared<Material>(mat2));
 
     Material& mat3 = m_model.GetMaterial(2);
-    mat3.SetUniformValue("Color", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    mat3.SetUniformValue("Color", glm::vec4(1.0f));
     mat3.SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/MillCat_color.jpg")));
+    mat3.SetUniformValue("AmbientReflection", 1.0f);
     m_model.SetMaterial(2, std::make_shared<Material>(mat3));
-
-    //Material& material1 = m_model.GetMaterial(1);
-    //material1->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    //material1->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_color.jpg")));
-    //m_model.SetMaterial(0, material1);
-    /*
-    Material material2 = m_model.GetMaterial(1);
-    material2->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    material2->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/MillCat_color.jpg")));
-    m_model.SetMaterial(1, material2);
-
-    Material material3 = m_model.GetMaterial(2);
-    material3->SetUniformValue("Color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-    material3->SetUniformValue("ColorTexture", std::make_shared<Texture2DObject>(textureLoader.Load("models/mill/Ground_shadow.jpg")));
-    m_model.SetMaterial(2, material3);
-    */
 
 }
 
@@ -155,7 +146,7 @@ void ViewerApplication::InitializeCamera()
 void ViewerApplication::InitializeLights()
 {
     // (todo) 05.X: Initialize light variables
-
+    ambientColor = glm::vec3(0.5f);
 }
 
 void ViewerApplication::RenderGUI()
