@@ -48,6 +48,8 @@ private:
 
     // (todo) 05.X: Add light variables
     glm::vec3 ambientColor;
-
+    glm::vec3 lightColor;
+    float lightIntensity;
+    glm::vec3 lightPosition;
 
 };
