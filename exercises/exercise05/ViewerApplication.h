@@ -51,5 +51,6 @@ private:
     glm::vec3 lightColor;
     float lightIntensity;
     glm::vec3 lightPosition;
+    float specularExponent = 100.0f;
 
 };

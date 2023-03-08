@@ -78,12 +78,16 @@ void ViewerApplication::InitializeModel()
     filteredUniforms.insert("AmbientColor");
     filteredUniforms.insert("LightColor");
     filteredUniforms.insert("LightPosition");
+    filteredUniforms.insert("CameraPosition");
 
     // Create reference material
     std::shared_ptr<Material> material = std::make_shared<Material>(shaderProgram, filteredUniforms);
     material->SetUniformValue("Color", glm::vec4(1.0f));
     material->SetUniformValue("AmbientReflection", 1.0f);
     material->SetUniformValue("DiffuseReflection", 1.0f);
+    material->SetUniformValue("SpecularReflection", 1.0f);
+
+    material->SetUniformValue("SpecularExponent", specularExponent);
     
 
     // Setup function
@@ -92,6 +96,7 @@ void ViewerApplication::InitializeModel()
     ShaderProgram::Location ambientColorLocation = shaderProgram->GetUniformLocation("AmbientColor");
     ShaderProgram::Location lightColorLocation = shaderProgram->GetUniformLocation("LightColor");
     ShaderProgram::Location lightPositionLocation = shaderProgram->GetUniformLocation("LightPosition");
+    ShaderProgram::Location cameraPositionLocation = shaderProgram->GetUniformLocation("CameraPosition");
     material->SetShaderSetupFunction([=](ShaderProgram& shaderProgram)
         {
             shaderProgram.SetUniform(worldMatrixLocation, glm::scale(glm::vec3(0.1f)));
@@ -101,6 +106,7 @@ void ViewerApplication::InitializeModel()
             shaderProgram.SetUniform(ambientColorLocation, ambientColor);
             shaderProgram.SetUniform(lightColorLocation, lightColor * lightIntensity);
             shaderProgram.SetUniform(lightPositionLocation, lightPosition);
+            shaderProgram.SetUniform(cameraPositionLocation, m_cameraPosition);
 
         });
 
@@ -166,9 +172,11 @@ void ViewerApplication::RenderGUI()
     m_imGui.BeginFrame();
 
     // (todo) 05.4: Add debug controls for light properties
-    ImGui::DragFloat("LightIntensity", &lightIntensity);
-    ImGui::DragFloat3("LightPosition", &lightPosition[0]);
     ImGui::ColorEdit3("AmbientColor", &ambientColor[0]);
+    ImGui::DragFloat3("LightPosition", &lightPosition[0]);
+    ImGui::ColorEdit3("LightColor", &lightColor[0]);
+    ImGui::DragFloat("LightIntensity", &lightIntensity);
+    ImGui::DragFloat("SpecularExponent", &specularExponent);
 
     m_imGui.EndFrame();
 }
