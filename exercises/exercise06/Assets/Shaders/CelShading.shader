@@ -71,39 +71,7 @@ Shader "CG2023/CelShading"
                 float intensity = ceil(GetColorLuminance(lighting) * _Levels) / _Levels;
 
                 //gl_FragColor = vec4(lighting, 1.0f);
-                gl_FragColor = vec4(intensity * albedo, 1.0f) * _LightColor0;
-            }
-            #endif // FRAGMENT
-
-            ENDGLSL
-        }
-        Pass
-        {
-            Cull Front
-
-            Name "OUTLINE"
-            Tags { "LightMode" = "ForwardBase" }
-
-            GLSLPROGRAM
-
-            #ifdef VERTEX
-            
-            void main()
-            {
-                vec3 worldPos = (unity_ObjectToWorld * gl_Vertex).xyz;
-                vec3 normal = (unity_ObjectToWorld * vec4(gl_Normal, 0.0f)).xyz;
-                float thickness = 0.012f;
-                worldPos = worldPos + (normal * thickness);
-
-                gl_Position = unity_MatrixVP * vec4(worldPos, 1.0f);
-            }
-            #endif // VERTEX
-
-            #ifdef FRAGMENT
-            
-            void main()
-            {
-                gl_FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+                gl_FragColor = vec4(intensity * albedo * _LightColor0.rgb, 1.0f);
             }
             #endif // FRAGMENT
 
@@ -158,7 +126,7 @@ Shader "CG2023/CelShading"
                 float intensity = ceil(GetColorLuminance(lighting) * _Levels) / _Levels;
 
                 //gl_FragColor = vec4(lighting, 1.0f);
-                gl_FragColor = vec4(intensity * albedo, 1.0f) * _LightColor0;
+                gl_FragColor = vec4(intensity * albedo * _LightColor0.rgb, 1.0f);
             }
             #endif // FRAGMENT
 
@@ -181,6 +149,38 @@ Shader "CG2023/CelShading"
             #ifdef FRAGMENT
             void main()
             {
+            }
+            #endif // FRAGMENT
+
+            ENDGLSL
+        }
+        Pass
+        {
+            Cull Front
+
+            Name "OUTLINE"
+            Tags { "LightMode" = "ForwardBase" }
+
+            GLSLPROGRAM
+
+            #ifdef VERTEX
+            
+            void main()
+            {
+                vec3 worldPos = (unity_ObjectToWorld * gl_Vertex).xyz;
+                vec3 normal = (unity_ObjectToWorld * vec4(gl_Normal, 0.0f)).xyz;
+                float thickness = 0.012f;
+                worldPos = worldPos + (normal * thickness);
+
+                gl_Position = unity_MatrixVP * vec4(worldPos, 1.0f);
+            }
+            #endif // VERTEX
+
+            #ifdef FRAGMENT
+            
+            void main()
+            {
+                gl_FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
             }
             #endif // FRAGMENT
 
