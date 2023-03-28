@@ -28,7 +28,8 @@ float ClampedDot(vec3 v1, vec3 v2)
 vec3 GetImplicitNormal(vec2 normal)
 {
 	// (todo) 07.3: Obtain the implicit Z component of the normal
-	return vec3(0);
+	float z = sqrt(1 - pow(normal.x, 2) - pow(normal.y, 2));
+	return vec3(normal.xy, z);
 }
 
 //

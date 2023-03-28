@@ -12,7 +12,11 @@ uniform sampler2D OthersTexture;
 uniform mat4 InvViewMatrix;
 uniform mat4 InvProjMatrix;
 
+
 void main()
 {
-	FragColor = texture(AlbedoTexture, TexCoord).rgba;
+	//FragColor = texture(AlbedoTexture, TexCoord).rgba;
+	vec2 sampledNormal = texture(NormalTexture, TexCoord).xy;
+	vec3 thirdCompNormal = GetImplicitNormal(sampledNormal);
+	FragColor = vec4(thirdCompNormal, 1.0f);
 }
