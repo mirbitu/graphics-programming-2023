@@ -19,4 +19,6 @@ void main()
 	vec2 sampledNormal = texture(NormalTexture, TexCoord).xy;
 	vec3 thirdCompNormal = GetImplicitNormal(sampledNormal);
 	FragColor = vec4(thirdCompNormal, 1.0f);
+	vec3 viewPosition = ReconstructViewPosition(DepthTexture, TexCoord, InvProjMatrix);
+	FragColor = vec4(viewPosition, 1.0f);
 }
