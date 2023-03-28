@@ -7,7 +7,8 @@ uniform vec4 LightAttenuation;
 float ComputeDistanceAttenuation(vec3 position)
 {
 	// (todo) 07.1: Compute distance attenuation, reading the range from LightAttenuation.x (fade start) and LightAttenuation.y (fade end)
-	return 1.0f;
+	return smoothstep(LightAttenuation.x, LightAttenuation.y, position.y);
+	//return 1.0f;
 }
 
 float ComputeAngularAttenuation(vec3 lightDir)
