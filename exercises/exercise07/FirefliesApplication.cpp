@@ -20,7 +20,7 @@ FirefliesApplication::FirefliesApplication()
     , m_lightColor(0.0f)
     , m_lightIntensity(0.0f)
     , m_useRandomColor(false)
-    , m_lightAttenuation(-1.5f, 1.0f)
+    , m_lightAttenuation(1.0f, 2.0f)
 {
 }
 
@@ -340,8 +340,8 @@ void FirefliesApplication::RenderGUI()
     ImGui::ColorEdit3("Light color", &m_lightColor[0]);
     ImGui::DragFloat("Light intensity", &m_lightIntensity, 0.05f, 0.0f, 100.0f);
     ImGui::Checkbox("Use random color", &m_useRandomColor);
-    ImGui::DragFloat("Light attenuation range min", &m_lightAttenuation[0], 0.001f, -5.5f, 0.0f);
-    ImGui::DragFloat("Light attenuation range max", &m_lightAttenuation[1], 0.001f, 0.0f, 5.5f);
+    //ImGui::DragFloat("Light attenuation range min", &m_lightAttenuation[0], 0.001f, -5.5f, 0.0f);
+    //ImGui::DragFloat("Light attenuation range max", &m_lightAttenuation[1], 0.001f, 0.0f, 5.5f);
 
     m_imGui.EndFrame();
 }
