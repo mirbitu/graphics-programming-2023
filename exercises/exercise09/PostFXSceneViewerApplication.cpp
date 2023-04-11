@@ -319,10 +319,13 @@ void PostFXSceneViewerApplication::InitializeRenderer()
     m_renderer.AddRenderPass(std::make_unique<PostFXRenderPass>(m_composeMaterial, m_renderer.GetDefaultFramebuffer()));
 
     // (todo) 09.1: Set exposure uniform default value
-
+    m_composeMaterial->SetUniformValue("Exposure", 1.0f);
 
     // (todo) 09.2: Set uniform default values
-
+    m_composeMaterial->SetUniformValue("Contrast", 1.0f);
+    m_composeMaterial->SetUniformValue("HueShift", 0.0f);
+    m_composeMaterial->SetUniformValue("Saturation", 1.0f);
+    m_composeMaterial->SetUniformValue("ColorFilter", glm::vec3(1.0f));
 
     // (todo) 09.4: Set the bloom texture uniform
 
@@ -391,6 +394,26 @@ void PostFXSceneViewerApplication::RenderGUI()
             if (ImGui::DragFloat("Exposure", &m_exposure, 0.01f, 0.01f, 5.0f))
             {
                 m_composeMaterial->SetUniformValue("Exposure", m_exposure);
+            }
+
+            if (ImGui::SliderFloat("Contrast", &m_contrast, 0.5f, 1.5f))
+            {
+                m_composeMaterial->SetUniformValue("Contrast", m_contrast);
+            }
+
+            if (ImGui::SliderFloat("HueShift", &m_hueShift, -0.5f, 0.5f))
+            {
+                m_composeMaterial->SetUniformValue("HueShift", m_hueShift);
+            }
+
+            if (ImGui::SliderFloat("Saturation", &m_saturation, 0.0f, 2.0f))
+            {
+                m_composeMaterial->SetUniformValue("Saturation", m_saturation);
+            }
+
+            if (ImGui::ColorEdit3("ColorFilter", &m_colorFilter[0]))
+            {
+                m_composeMaterial->SetUniformValue("ColorFilter", m_colorFilter);
             }
         }
     }
