@@ -334,16 +334,18 @@ void PostFXSceneViewerApplication::InitializeRenderer()
 
     // (todo) 09.3: Create a copy pass from m_sceneTexture to the first temporary texture
     std::shared_ptr<Material> copyMaterial = CreatePostFXMaterial("shaders/postfx/copy.frag", m_sceneTexture);
-    m_renderer.AddRenderPass(std::make_unique<PostFXRenderPass>(copyMaterial, m_renderer.GetDefaultFramebuffer()));
+    m_renderer.AddRenderPass(std::make_unique<PostFXRenderPass>(copyMaterial, m_tmpFramebuffers[0]));
 
     // (todo) 09.4: Replace the copy pass with a new bloom pass
+    
+
 
 
     // (todo) 09.3: Add blur passes
     std::shared_ptr<Material> horizontalBlur = CreatePostFXMaterial("shaders/postfx/blur.frag", m_tmpTextures[0]);
     std::shared_ptr<Material> verticalBlur = CreatePostFXMaterial("shaders/postfx/blur.frag", m_tmpTextures[1]);
-    horizontalBlur->SetUniformValue("Scale", glm::vec2(1 / width, 0));
-    verticalBlur->SetUniformValue("Scale", glm::vec2(0, 1 / height));
+    horizontalBlur->SetUniformValue("Scale", glm::vec2(1.0 / width, 0));
+    verticalBlur->SetUniformValue("Scale", glm::vec2(0, 1.0 / height));
     m_renderer.AddRenderPass(std::make_unique<PostFXRenderPass>(horizontalBlur, m_tmpFramebuffers[1]));
     m_renderer.AddRenderPass(std::make_unique<PostFXRenderPass>(verticalBlur, m_tmpFramebuffers[0]));
     
