@@ -64,8 +64,10 @@ private:
     std::shared_ptr<Texture2DObject> m_depthTexture;
     std::shared_ptr<Texture2DObject> m_sceneTexture;
     // (todo) 09.3: Declare an array of 2 temporary framebuffers
+    std::shared_ptr<FramebufferObject> m_tmpFramebuffers[2] = {};
 
     // (todo) 09.3: Declare an array of 2 temporary textures
+    std::shared_ptr<Texture2DObject> m_tmpTextures[2] = {};
 
 
     // Configuration values
