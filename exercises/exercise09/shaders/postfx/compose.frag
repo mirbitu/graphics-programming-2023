@@ -11,12 +11,15 @@ uniform float Contrast;
 uniform float HueShift;
 uniform float Saturation;
 uniform vec3 ColorFilter;
+uniform sampler2D BloomTexture;
 
 
 void main()
 {
-	vec4 sampledTexture = texture(SourceTexture, TexCoord);
-	vec4 toneMappedColor = 1 - exp(-sampledTexture * Exposure);
+	vec4 color = texture(SourceTexture, TexCoord);
+	vec4 bloomSample = texture(BloomTexture, TexCoord);
+	color = color + bloomSample;
+	vec4 toneMappedColor = 1 - exp(-color * Exposure);
 
 	vec3 finalColor;
 	finalColor = toneMappedColor.rgb;
